@@ -1,0 +1,1352 @@
+{
+  "info": {
+    "_postman_id": "76641323-06cc-47eb-a886-4a91f734cc8b",
+    "name": "Gestor de Proyectos - Práctica 1 (Pruebas de endpoints)",
+    "description": "Ejecutar en orden. Cada petición 'Listar' guarda automáticamente el id del registro creado. Los casos P-00, P-25 a P-29 y P-35 son de base de datos (psql): ver sql/postgres/04_pruebas_postman.sql.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Usuarios",
+      "item": [
+        {
+          "name": "P-01 Agregar usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/addUsuario",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "addUsuario"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Prueba Postman\",\n  \"correo_electronico\": \"prueba.postman@cbtis75.edu.mx\",\n  \"contrasena\": \"Prueba123\",\n  \"rol\": \"Estudiante\",\n  \"imagen_usuario\": \"#3366FF\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-02 Listar usuarios",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/buscarUsuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "buscarUsuarios"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "const datos = pm.response.json();",
+                  "const reg = datos.find(x => x.correo_electronico === \"prueba.postman@cbtis75.edu.mx\");",
+                  "pm.test(\"Aparece el usuario creado\", () => pm.expect(reg, \"no se encontró el usuario creado\").to.exist);",
+                  "if (reg) pm.collectionVariables.set(\"id_usuario\", reg.id_usuario);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-03 Login correcto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/getUsuarioLogin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "getUsuarioLogin"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo_electronico\": \"prueba.postman@cbtis75.edu.mx\",\n  \"contrasena\": \"Prueba123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve el registro correcto\", () => pm.expect(pm.response.json().nombre).to.eql(\"Usuario Prueba Postman\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-04 Login incorrecto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/getUsuarioLogin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "getUsuarioLogin"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo_electronico\": \"prueba.postman@cbtis75.edu.mx\",\n  \"contrasena\": \"incorrecta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve el registro correcto\", () => pm.expect(pm.response.json().nombre).to.eql(\"000\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-05 Buscar usuario por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/buscarUsuario?id={{id_usuario}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "buscarUsuario"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "{{id_usuario}}"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve el registro correcto\", () => pm.expect(pm.response.json().id_usuario).to.eql(Number(pm.collectionVariables.get(\"id_usuario\"))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-06 Actualizar usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/updateUsuario",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "updateUsuario"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_usuario\": {{id_usuario}},\n  \"nombre\": \"Usuario Prueba Postman Modificado\",\n  \"correo_electronico\": \"prueba.modificado@cbtis75.edu.mx\",\n  \"contrasena\": \"Prueba456\",\n  \"rol\": \"Estudiante\",\n  \"imagen_usuario\": \"#FF6633\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Proyectos",
+      "item": [
+        {
+          "name": "P-07 Agregar proyecto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/addProyecto",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "addProyecto"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Proyecto Prueba Postman\",\n  \"descripcion\": \"Alta desde Postman\",\n  \"fecha_inicio\": \"2026-10-06\",\n  \"fecha_finalizacion\": \"2026-10-30\",\n  \"estado_proyecto\": \"En proceso\",\n  \"fondo\": \"/Images/blanco.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-08 Listar proyectos",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/buscarProyectos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "buscarProyectos"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "const datos = pm.response.json();",
+                  "const reg = datos.find(x => x.nombre === \"Proyecto Prueba Postman\");",
+                  "pm.test(\"Aparece el proyecto creado\", () => pm.expect(reg, \"no se encontró el proyecto creado\").to.exist);",
+                  "if (reg) pm.collectionVariables.set(\"id_proyecto\", reg.id_proyecto);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-09 Buscar proyecto por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/buscarProyecto?id_proyecto={{id_proyecto}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "buscarProyecto"
+              ],
+              "query": [
+                {
+                  "key": "id_proyecto",
+                  "value": "{{id_proyecto}}"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve el registro correcto\", () => pm.expect(pm.response.json().nombre).to.eql(\"Proyecto Prueba Postman\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-10 Actualizar proyecto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/updateProyecto",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "updateProyecto"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_proyecto\": {{id_proyecto}},\n  \"nombre\": \"Proyecto Prueba Postman Modificado\",\n  \"descripcion\": \"Editado desde Postman\",\n  \"fecha_inicio\": \"2026-10-06\",\n  \"fecha_finalizacion\": \"2026-11-30\",\n  \"estado_proyecto\": \"Terminado\",\n  \"fondo\": \"/Images/blanco.png\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Tareas",
+      "item": [
+        {
+          "name": "P-11 Agregar tarea",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/addTareas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "addTareas"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Tarea Prueba Postman\",\n  \"descripcion\": \"Alta desde Postman\",\n  \"fecha_vencimiento\": \"2026-10-15\",\n  \"estado\": \"primary\",\n  \"lista\": \"pendiente\",\n  \"id_proyecto\": {{id_proyecto}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-12 Listar tareas",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/buscarTareas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "buscarTareas"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "const datos = pm.response.json();",
+                  "const reg = datos.find(x => x.nombre === \"Tarea Prueba Postman\");",
+                  "pm.test(\"Aparece la tarea creada\", () => pm.expect(reg, \"no se encontró la tarea creada\").to.exist);",
+                  "if (reg) pm.collectionVariables.set(\"id_tarea\", reg.id_tarea);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-13 Tareas por proyecto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/getTarea",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "getTarea"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_proyecto\": {{id_proyecto}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve la tarea del proyecto\", () => pm.expect(pm.response.json().map(t => t.nombre)).to.include(\"Tarea Prueba Postman\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-14 Buscar tarea por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/buscarTarea?id_tarea={{id_tarea}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "buscarTarea"
+              ],
+              "query": [
+                {
+                  "key": "id_tarea",
+                  "value": "{{id_tarea}}"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve el registro correcto\", () => pm.expect(pm.response.json().nombre).to.eql(\"Tarea Prueba Postman\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-15 Actualizar tarea",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/updateTareas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "updateTareas"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_tarea\": {{id_tarea}},\n  \"nombre\": \"Tarea Prueba Postman\",\n  \"descripcion\": \"Editada desde Postman\",\n  \"fecha_vencimiento\": \"2026-10-20\",\n  \"estado\": \"success\",\n  \"lista\": \"terminado\",\n  \"id_proyecto\": {{id_proyecto}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Comentarios",
+      "item": [
+        {
+          "name": "P-16 Agregar comentario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/addComentario",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "addComentario"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto_comentario\": \"Comentario Prueba Postman\",\n  \"fecha_hora\": \"2026-10-06 18:30\",\n  \"id_usuario\": \"Usuario Prueba Postman\",\n  \"id_tarea\": {{id_tarea}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-17 Listar comentarios",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/buscarComentarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "buscarComentarios"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "const datos = pm.response.json();",
+                  "const reg = datos.find(x => x.texto_comentario === \"Comentario Prueba Postman\");",
+                  "pm.test(\"Aparece el comentario creado\", () => pm.expect(reg, \"no se encontró el comentario creado\").to.exist);",
+                  "if (reg) pm.collectionVariables.set(\"id_comentario\", reg.id_comentario);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-18 Comentarios por tarea",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/getComentario",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "getComentario"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_tarea\": {{id_tarea}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve el comentario de la tarea\", () => pm.expect(pm.response.json().map(c => c.texto_comentario)).to.include(\"Comentario Prueba Postman\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-19 Buscar comentario por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/buscarComentario?id={{id_comentario}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "buscarComentario"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "{{id_comentario}}"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve el registro correcto\", () => pm.expect(pm.response.json().texto_comentario).to.eql(\"Comentario Prueba Postman\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-20 Actualizar comentario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/updateComentario",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "updateComentario"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_comentario\": {{id_comentario}},\n  \"texto_comentario\": \"Comentario Prueba Postman (editado)\",\n  \"fecha_hora\": \"2026-10-06 18:45\",\n  \"id_usuario\": \"Usuario Prueba Postman\",\n  \"id_tarea\": {{id_tarea}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Asignaciones",
+      "item": [
+        {
+          "name": "P-21 Agregar asignación",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/addAsignacion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "addAsignacion"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_usuario\": {{id_usuario}},\n  \"id_tarea\": {{id_tarea}},\n  \"fecha_asignacion\": \"2026-10-06\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-22 Listar asignaciones",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/buscarAsignaciones",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "buscarAsignaciones"
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "const datos = pm.response.json();",
+                  "const reg = datos.find(x => x.id_usuario == pm.collectionVariables.get(\"id_usuario\") && x.id_tarea == pm.collectionVariables.get(\"id_tarea\"));",
+                  "pm.test(\"Aparece la asignación creada\", () => pm.expect(reg, \"no se encontró la asignación creada\").to.exist);",
+                  "if (reg) pm.collectionVariables.set(\"id_asignacion\", reg.id_asignacion);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-23 Buscar asignación por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/buscarAsignacion?id={{id_asignacion}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "buscarAsignacion"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "{{id_asignacion}}"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve el registro correcto\", () => pm.expect(pm.response.json().id_asignacion).to.eql(Number(pm.collectionVariables.get(\"id_asignacion\"))));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-24 Actualizar asignación",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/updateAsignacion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "updateAsignacion"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_asignacion\": {{id_asignacion}},\n  \"id_usuario\": {{id_usuario}},\n  \"id_tarea\": {{id_tarea}},\n  \"fecha_asignacion\": \"2026-10-08\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "6. Eliminaciones (hacer antes P-25 a P-29 en psql)",
+      "item": [
+        {
+          "name": "P-30 Eliminar comentario",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deleteComentario",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "deleteComentario"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_comentario\": {{id_comentario}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-31 Eliminar asignación",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deleteAsignacion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "deleteAsignacion"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_asignacion\": {{id_asignacion}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-32 Eliminar tarea",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deleteTareas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "deleteTareas"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_tarea\": {{id_tarea}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-33 Eliminar proyecto",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deleteProyecto",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "deleteProyecto"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_proyecto\": {{id_proyecto}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-34 Eliminar usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deleteUsuario",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "deleteUsuario"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_usuario\": {{id_usuario}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Responde 1\", () => pm.expect(pm.response.text()).to.eql(\"1\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "7. Casos inválidos y fallas corregidas",
+      "item": [
+        {
+          "name": "P-36 Agregar tarea con fecha inválida",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/addTareas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "addTareas"
+              ]
+            },
+            "description": "Antes de la corrección (falla F-01) respondía 500 Internal Server Error.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Tarea con fecha inválida\",\n  \"fecha_vencimiento\": \"no-es-fecha\",\n  \"id_proyecto\": 197\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400 Bad Request (error controlado)\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Explica el error\", () => pm.expect(pm.response.json().error).to.include(\"Dato inválido\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-37 Actualizar usuario inexistente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/updateUsuario",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "updateUsuario"
+              ]
+            },
+            "description": "Antes de la corrección (falla F-02) respondía 1 y CREABA un usuario nuevo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_usuario\": 999999,\n  \"nombre\": \"Usuario Inexistente\",\n  \"correo_electronico\": \"no.existe@prueba.mx\",\n  \"contrasena\": \"x\",\n  \"rol\": \"Estudiante\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404 Not Found\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Indica que no existe\", () => pm.expect(pm.response.json().detalle).to.eql(\"No existe el usuario con id 999999\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "P-38 Eliminar proyecto inexistente",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/deleteProyecto",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "deleteProyecto"
+              ]
+            },
+            "description": "Antes de la corrección (falla F-03) respondía 1 aunque no borraba nada.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_proyecto\": 999999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404 Not Found\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Indica que no existe\", () => pm.expect(pm.response.json().detalle).to.eql(\"No existe el proyecto con id 999999\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "id_usuario",
+      "value": ""
+    },
+    {
+      "key": "id_proyecto",
+      "value": ""
+    },
+    {
+      "key": "id_tarea",
+      "value": ""
+    },
+    {
+      "key": "id_comentario",
+      "value": ""
+    },
+    {
+      "key": "id_asignacion",
+      "value": ""
+    }
+  ]
+}
