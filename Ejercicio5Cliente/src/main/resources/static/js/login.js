@@ -44,6 +44,16 @@ function validarLogin(){
 					localStorage.setItem("usuario", JSON.stringify(data));
 					window.location.href = 'inicio';
 				}
+			},
+			error: function(xhr){
+				// La API no respondió o devolvió un error: se avisa al usuario en lugar de no hacer nada
+				var mensaje = "No se pudo conectar con el servidor. Intente más tarde.";
+				if(xhr.status == 502){
+					mensaje = "No se pudo conectar con el servidor: respondió con un error. Intente más tarde.";
+				}
+				document.getElementById("textoAlertaServidor").innerText = mensaje;
+				var toast = new bootstrap.Toast(document.querySelector('#alertaServidor'));
+				toast.show();
 			}
 		});
 	}

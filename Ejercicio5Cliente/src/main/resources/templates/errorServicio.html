@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project.ppml</title>
+    <link rel="icon" th:href="@{/Images/icono.ico}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body class="bg-light">
+    <div class="container mt-5" style="max-width: 640px;">
+        <div class="alert alert-danger shadow-sm" role="alert" id="mensajeError">
+            <h4 class="alert-heading">No se pudo completar la operación</h4>
+            <p class="mb-0" th:text="${mensaje}">No se pudo conectar con el servidor de datos.</p>
+        </div>
+        <a th:href="@{/inicio}" class="btn btn-primary">Volver a mis proyectos</a>
+        <a th:href="@{/login}" class="btn btn-outline-secondary ms-2">Ir al inicio de sesión</a>
+    </div>
+</body>
+</html>

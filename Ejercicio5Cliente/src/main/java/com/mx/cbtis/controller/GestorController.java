@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -30,6 +31,16 @@ import com.mx.cbtis.modelo.Usuario;
 
 @Controller
 public class GestorController {
+	
+	private final RestTemplate restTemplate;
+	
+	// URL de la API REST (se puede cambiar con la propiedad api.url)
+	private final String api;
+	
+	public GestorController(RestTemplate restTemplate, @Value("${api.url:http://localhost:8081}") String api) {
+		this.restTemplate = restTemplate;
+		this.api = api;
+	}
 	
 	@GetMapping("/")
 	public String getHome() {
@@ -63,8 +74,8 @@ public class GestorController {
 	@PostMapping("/saveUsuario")
 	public ModelAndView setSaveUsuario(@ModelAttribute Usuario usuario) {
                    
-    	RestTemplate template = new RestTemplate();
-    	String urlservicebd = "http://localhost:8081/addUsuario";
+    	RestTemplate template = this.restTemplate;
+    	String urlservicebd = api + "/addUsuario";
     	ResponseEntity<Integer> response = template.postForEntity(urlservicebd,usuario,Integer.class);
 
     	return new ModelAndView("redirect:/login");
@@ -83,8 +94,8 @@ public class GestorController {
 	@PostMapping("/saveProyecto")
 	public ModelAndView setSaveProyecto(@ModelAttribute Proyectos proyecto) {
 
-    	RestTemplate template = new RestTemplate();
-    	String urlservicebd = "http://localhost:8081/addProyecto";
+    	RestTemplate template = this.restTemplate;
+    	String urlservicebd = api + "/addProyecto";
     	ResponseEntity<Integer> response = template.postForEntity(urlservicebd,proyecto,Integer.class);
 
     	return new ModelAndView("redirect:/inicio");
@@ -94,8 +105,8 @@ public class GestorController {
 	@PostMapping("/consultarProyectos")
 	public ResponseEntity<Object> consultarProyectos(Model modelo) {
 		
-		RestTemplate template = new RestTemplate();
-		String urlservicebd = "http://localhost:8081/buscarProyectos";
+		RestTemplate template = this.restTemplate;
+		String urlservicebd = api + "/buscarProyectos";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		Proyectos[]  response = template.postForObject(urlservicebd, headers, Proyectos[].class);
@@ -112,8 +123,8 @@ public class GestorController {
 	@PostMapping("/eliminarProyecto")
 	public ModelAndView eliminarProyecto(@RequestBody Proyectos proyecto) {
 		System.out.println("El id del proyecto es: " + proyecto.getId_proyecto());
-		RestTemplate  template = new RestTemplate();
-		String urlservicebd = "http://localhost:8081/deleteProyecto";
+		RestTemplate template = this.restTemplate;
+		String urlservicebd = api + "/deleteProyecto";
 		HttpEntity<Proyectos> request = new HttpEntity<Proyectos>(proyecto); 
 		ResponseEntity<Integer> response = template.exchange(urlservicebd, HttpMethod.DELETE,request,Integer.class);
 	
@@ -122,10 +133,10 @@ public class GestorController {
 	
 	@PostMapping ("/actualizarProyecto")
 	public ResponseEntity<Object> updateProyecto(@RequestBody Proyectos proyecto) {
-		RestTemplate  template = new RestTemplate();
+		RestTemplate template = this.restTemplate;
 		Map<String,Integer> params = new HashMap<String,Integer>();
 		params.put("id_proyecto", proyecto.getId_proyecto());
-		String urlservicebd = "http://localhost:8081/buscarProyecto?id_proyecto={id_proyecto}";
+		String urlservicebd = api + "/buscarProyecto?id_proyecto={id_proyecto}";
 		Proyectos proyectos = template.getForObject(urlservicebd, Proyectos.class, params);
 		
 		ResponseEntity<Object> objeto = new ResponseEntity<Object>(proyectos, HttpStatusCode.valueOf(200));
@@ -136,8 +147,8 @@ public class GestorController {
 	
 	@PostMapping("/verificarLogin")
 	public ResponseEntity<Usuario> verificarUsuario(@RequestBody Usuario paramUser) {
-		String urlservicebd = "http://localhost:8081/getUsuarioLogin";
-		RestTemplate  template = new RestTemplate();
+		String urlservicebd = api + "/getUsuarioLogin";
+		RestTemplate template = this.restTemplate;
 		ResponseEntity<Usuario> response = template.postForEntity(urlservicebd,paramUser,Usuario.class);
 		
 		return response;
@@ -146,8 +157,8 @@ public class GestorController {
 	
 	/*@PostMapping("/obtenerTareas")
 	public ResponseEntity<Object> obtenerTareas(@RequestBody Tareas idProyecto, Model modelo) {
-		String urlservicebd = "http://localhost:8081/getTarea";
-		RestTemplate  template = new RestTemplate();
+		String urlservicebd = api + "/getTarea";
+		RestTemplate template = this.restTemplate;
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		Tareas[] response = template.postForObject(urlservicebd, idProyecto, Tareas[].class);
@@ -163,8 +174,8 @@ public class GestorController {
 	@PostMapping("/consultarUsuarios")
 	public ResponseEntity<Object> consultarUsuarios(Model modelo) {
 		
-		RestTemplate template = new RestTemplate();
-		String urlservicebd = "http://localhost:8081/buscarUsuarios";
+		RestTemplate template = this.restTemplate;
+		String urlservicebd = api + "/buscarUsuarios";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		Usuario[]  response = template.postForObject(urlservicebd, headers, Usuario[].class);
@@ -178,8 +189,8 @@ public class GestorController {
 	
 	@PostMapping("/obtenerTareas")
 		public ResponseEntity<List<Tareas>> obtenerTareas(@RequestBody Tareas idProyecto, Model modelo) {
-	    String urlservicebd = "http://localhost:8081/getTarea";
-	    RestTemplate template = new RestTemplate();
+	    String urlservicebd = api + "/getTarea";
+	    RestTemplate template = this.restTemplate;
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_JSON);
 	    Tareas[] response = template.postForObject(urlservicebd, idProyecto, Tareas[].class);
@@ -190,8 +201,8 @@ public class GestorController {
 	
 	@PostMapping("/obtenerComentarios")
 		public ResponseEntity<List<Comentarios>> obtenerComentarios(@RequestBody Comentarios idComentario, Model modelo) {
-	    String urlservicebd = "http://localhost:8081/getComentario";
-	    RestTemplate template = new RestTemplate();
+	    String urlservicebd = api + "/getComentario";
+	    RestTemplate template = this.restTemplate;
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_JSON);
 	    Comentarios[] response = template.postForObject(urlservicebd, idComentario, Comentarios[].class);
@@ -209,11 +220,11 @@ public class GestorController {
 		Comentarios comentario = new Comentarios();
 		modelo.addAttribute("comentarios", comentario);
 		
-		RestTemplate template = new RestTemplate();
+		RestTemplate template = this.restTemplate;
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		
-		String urlservicebdUsuario = "http://localhost:8081/buscarUsuarios";
+		String urlservicebdUsuario = api + "/buscarUsuarios";
 		Usuario[] responseUsuario = template.postForObject(urlservicebdUsuario, headers, Usuario[].class);  
 		List<Usuario> usuarios = Arrays.asList(responseUsuario);
 		modelo.addAttribute("listaUsuarios", usuarios);
@@ -224,7 +235,7 @@ public class GestorController {
 	@GetMapping("/tarea")
 	public String getTarea(Model modelo) {
 
-		RestTemplate template = new RestTemplate();
+		RestTemplate template = this.restTemplate;
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		Tareas tareas = new Tareas();
@@ -236,8 +247,8 @@ public class GestorController {
 	@PostMapping("/saveTarea")
 	public ModelAndView setSaveTareas(@ModelAttribute Tareas tareas) {
 		
-		RestTemplate template = new RestTemplate();
-		String urlservicebd = "http://localhost:8081/addTareas";
+		RestTemplate template = this.restTemplate;
+		String urlservicebd = api + "/addTareas";
 		ResponseEntity<Integer> response = template.postForEntity(urlservicebd, tareas, Integer.class);
 		ModelAndView mav = new ModelAndView("redirect:/proyecto");
 		mav.addObject("id_proyecto", tareas.getId_proyecto());
@@ -247,8 +258,8 @@ public class GestorController {
 	@PostMapping("/saveComentario")
 	public String setSaveComentario(@RequestBody Comentarios comentarios) {
 		
-		RestTemplate template = new RestTemplate();
-		String urlservicebd = "http://localhost:8081/addComentario";
+		RestTemplate template = this.restTemplate;
+		String urlservicebd = api + "/addComentario";
 		ResponseEntity<Integer> response = template.postForEntity(urlservicebd, comentarios, Integer.class); 
 		
 		return "proyecto";
@@ -257,10 +268,10 @@ public class GestorController {
 	
 	@PostMapping("/actualizarTarea")
 	public ResponseEntity<Object> updateTarea(@RequestBody  Tareas tarea) {
-		RestTemplate template = new RestTemplate();
+		RestTemplate template = this.restTemplate;
 		Map<String,Integer> params = new HashMap<String,Integer>();
 		params.put("id_tarea", tarea.getId_tarea());
-		String urlservicebd = "http://localhost:8081/buscarTarea?id_tarea={id_tarea}";
+		String urlservicebd = api + "/buscarTarea?id_tarea={id_tarea}";
 		Tareas tareas = template.getForObject(urlservicebd, Tareas.class, params);
 		
 		ResponseEntity<Object> objeto = new ResponseEntity<Object>(tareas, HttpStatusCode.valueOf(200));
@@ -271,8 +282,8 @@ public class GestorController {
 	@PostMapping("/eliminarTarea")
 	public ModelAndView eliminarTarea(@RequestBody Tareas tareas) {
 		System.out.println("El id d de la tarea es: " + tareas.getId_tarea());
-		RestTemplate template = new RestTemplate();
-		String urlservicebd = "http://localhost:8081/deleteTareas";
+		RestTemplate template = this.restTemplate;
+		String urlservicebd = api + "/deleteTareas";
 		HttpEntity<Tareas> request = new HttpEntity<Tareas>(tareas);
 		ResponseEntity<Integer> response = template.exchange(urlservicebd, HttpMethod.DELETE,request,Integer.class);
 		
@@ -285,24 +296,24 @@ public class GestorController {
 	
 	@PostMapping("/verificarTarea")
 	public ResponseEntity<Integer> verificarTarea(@RequestBody Tareas paramName){
-		String urlservicebd = "http://localhost:8081/addTareas";
-		RestTemplate template = new RestTemplate();
+		String urlservicebd = api + "/addTareas";
+		RestTemplate template = this.restTemplate;
 		ResponseEntity<Integer> response = template.postForEntity(urlservicebd, paramName, Integer.class);
 		return response;
 	}
 	
 	@PostMapping("/cambiosTareas")
 	public ResponseEntity<Integer> cambiosTareas(@RequestBody Tareas paramDatos){
-		String urlservicebd = "http://localhost:8081/addTareas";
-		RestTemplate template = new RestTemplate();
+		String urlservicebd = api + "/addTareas";
+		RestTemplate template = this.restTemplate;
 		ResponseEntity<Integer> response = template.postForEntity(urlservicebd, paramDatos, Integer.class);
 		return response;
 	}
 	
 	@PostMapping("/consultarTareas")
 	public ResponseEntity<Object> consultarTareas() {	
-		RestTemplate template = new RestTemplate();
-		String urlservicebd = "http://localhost:8081/buscarTareas";
+		RestTemplate template = this.restTemplate;
+		String urlservicebd = api + "/buscarTareas";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		Tareas[]  response = template.postForObject(urlservicebd, headers, Tareas[].class);
@@ -316,8 +327,8 @@ public class GestorController {
 	
 	@PostMapping("/consultarComentarios")
 	public ResponseEntity<Object> consultarComentarios() {	
-		RestTemplate template = new RestTemplate();
-		String urlservicebd = "http://localhost:8081/buscarComentarios";
+		RestTemplate template = this.restTemplate;
+		String urlservicebd = api + "/buscarComentarios";
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		Comentarios[]  response = template.postForObject(urlservicebd, headers, Comentarios[].class);

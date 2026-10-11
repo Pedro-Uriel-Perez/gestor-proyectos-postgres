@@ -54,7 +54,9 @@ $(document).ready(function(){
           });
         },
         error: function(error) {
-          console.error('Error al cargar proyectos:', error);}
+          console.error('Error al cargar proyectos:', error);
+          mostrarError("No se pudieron cargar los proyectos. Verifique la conexión con el servidor e intente de nuevo.");
+        }
       });
 });
 
@@ -71,6 +73,10 @@ function eliminarProyecto(idProyecto){
 		type : "POST",
 		success: function(){
 			window.location.href = 'inicio';
+		},
+		error: function(){
+			$('#modalAlerta').modal('hide');
+			mostrarError("No se pudo eliminar el proyecto. Verifique la conexión con el servidor e intente de nuevo.");
 		}
 	});
     
@@ -114,8 +120,16 @@ function actualizarProyecto(idProyecto){
 		
 		error: function() {
             console.log("Error");
+            mostrarError("No se pudo obtener la información del proyecto. Verifique la conexión con el servidor.");
         }
 	});
+}
+
+/** Muestra un mensaje de error en la vista en lugar de dejarla vacía. */
+function mostrarError(mensaje){
+	var aviso = document.getElementById("mensajeInicio");
+	aviso.innerText = mensaje;
+	aviso.classList.remove("d-none");
 }
 
 function asignarFondo(){

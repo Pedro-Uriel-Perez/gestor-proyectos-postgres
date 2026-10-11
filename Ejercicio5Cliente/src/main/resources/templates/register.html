@@ -46,11 +46,14 @@
             <div class="mb-3">
               <label for="exampleInputRol1" class="form-label">Rol</label>
               <select class="form-select" th:field="*{rol}" required>
-				  <option value="0">Seleccione una opci&oacute;n</option>
+				  <option value="">Seleccione una opci&oacute;n</option>
 				  <option value="Estudiante">Estudiante</option>
 				  <option value="Docente">Docente</option>
 				  <option value="Otro">Otro</option>
 			  </select>
+			  <div class="invalid-feedback" id="mensajeRol">
+			    Seleccione un rol
+			  </div>
             </div>
             <input type="hidden" id="imagenUsuario" th:field="*{imagen_usuario}">
             <button type="submit" class="btn btn-primary" th:onclick="getRandomColor();">Registrar</button>

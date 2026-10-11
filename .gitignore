@@ -4,3 +4,4 @@ target/
 .DS_Store
 ~$*.docx
 docs/*.docx
+docs/evidencias-p2/

@@ -216,7 +216,8 @@ $(document).ready(function() {
           });
 		},
 		  error: function(error) {
-          console.error('Error al cargar tareas:', error);}
+          console.error('Error al cargar tareas:', error);
+          mostrarAvisoProyecto("No se pudieron cargar las tareas. Verifique la conexión con el servidor e intente de nuevo.");}
       });
        
 });
@@ -466,6 +467,12 @@ function llenarBarraLateral(idProyecto){
 		success: function(data){
 			console.log(data);
 			
+			// La API devuelve un objeto vacío cuando el id no existe
+			if(!data || data.id_proyecto == null){
+				mostrarAvisoProyecto("El proyecto solicitado no existe o fue eliminado.");
+				return;
+			}
+			
 			var nombre = document.getElementById("offcanvasScrollingLabel");
 			nombre.innerHTML = data.nombre;
 			
@@ -476,8 +483,16 @@ function llenarBarraLateral(idProyecto){
 		
 		error: function() {
             console.log("Error");
+            mostrarAvisoProyecto("No se pudo cargar el proyecto. Verifique la conexión con el servidor e intente de nuevo.");
         }
 	});
+}
+
+/** Muestra un aviso en la vista del proyecto y oculta el tablero de tareas. */
+function mostrarAvisoProyecto(mensaje){
+	document.getElementById("textoMensajeProyecto").innerText = mensaje;
+	document.getElementById("mensajeProyecto").classList.remove("d-none");
+	document.getElementById("tablero").classList.add("d-none");
 }
 
 function comentarios(idTarea){

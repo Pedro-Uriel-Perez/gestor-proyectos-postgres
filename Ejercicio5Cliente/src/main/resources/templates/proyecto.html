@@ -91,7 +91,13 @@
 	
 	
 	<!--Listas-->
-	<div class="container text-center text-dark mt-5 mx-flex">
+	<!-- Mensaje cuando el proyecto no existe o la API no responde -->
+	<div id="mensajeProyecto" class="alert alert-warning d-none mx-auto mt-4" role="alert" style="max-width: 720px;">
+		<span id="textoMensajeProyecto"></span>
+		<a href="inicio" class="alert-link ms-2">Volver a mis proyectos</a>
+	</div>
+
+	<div class="container text-center text-dark mt-5 mx-flex" id="tablero">
 	  <div class="row align-items-center justify-content-center p-3 mb-5 bg-transparent rounded">
 		
 	   <!--Lista Tareas pendientes-->

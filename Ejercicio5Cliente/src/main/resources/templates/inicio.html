@@ -32,6 +32,8 @@
 
         <div class="container">
             <div><p id="titulo">Mis Proyectos</p></div>
+			<!-- Mensaje cuando la API no responde o falla -->
+			<div id="mensajeInicio" class="alert alert-danger d-none" role="alert"></div>
 			<div id="cardContainer" class="row"></div>
 			
             <!-- Modal agregar -->
@@ -58,7 +60,7 @@
 
                                 <p class="nombres">Estado del proyecto</p>
                                 <select th:field="*{estado_proyecto}" class="inputs" id="estado_proyecto" required>
-                                    <option value="0">Seleccione una opci&oacute;n</option> 
+                                    <option value="">Seleccione una opci&oacute;n</option> 
                                     <option value="En proceso">En proceso</option>
                                     <option value="Finalizado">Finalizado</option>
                                 </select>
@@ -101,7 +103,7 @@
 
                                 <p class="nombres">Estado del proyecto</p>
                                 <select th:field="*{estado_proyecto}" class="inputs" id="editar_estado_proyecto" required>
-                                    <option value="0">Seleccione una opci&oacute;n</option> 
+                                    <option value="">Seleccione una opci&oacute;n</option> 
                                     <option value="En proceso">En proceso</option>
                                     <option value="Finalizado">Finalizado</option>
                                 </select>
