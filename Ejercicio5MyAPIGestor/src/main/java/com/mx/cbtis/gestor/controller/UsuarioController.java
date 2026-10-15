@@ -57,37 +57,22 @@ public class UsuarioController {
 	
 	@PostMapping("/addUsuario")
 	public int addUsuario(@RequestBody Usuario usuario) {
-		int flag = 0;
-		if(!usuario.equals(null)) {
-			usuariotable.save(usuario);
-			flag = 1;
-		}
-		
-		return flag;
+		usuariotable.save(usuario);
+		return 1;
 	}
 	
 	@PostMapping("/updateUsuario")
 	public int updateUsuario(@RequestBody Usuario usuario) {
 		verificador.exigir(usuariotable, usuario.getId_usuario(), "usuario");
-		int flag = 0;
-		if(!usuario.equals(null)) {
-			usuariotable.save(usuario);
-			flag = 1;
-		}
-		
-		return flag;
+		usuariotable.save(usuario);
+		return 1;
 	}
 	
 	@DeleteMapping("/deleteUsuario")
 	public int deleteUsuario(@RequestBody Usuario usuario) {
 		verificador.exigir(usuariotable, usuario.getId_usuario(), "usuario");
-		int flag = 0;
-		if(!usuario.equals(null)) {
-			usuariotable.delete(usuario);
-			flag = 1;
-		}
-		
-		return flag;
+		usuariotable.delete(usuario);
+		return 1;
 	}
 	
 	@PostMapping("/buscarUsuarios")

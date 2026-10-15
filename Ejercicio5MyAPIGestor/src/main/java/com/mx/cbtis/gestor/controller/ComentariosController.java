@@ -46,39 +46,24 @@ public class ComentariosController {
 	@PostMapping("/addComentario")
 	public int addComentario(@RequestBody Comentarios comentario) {
 		
-		int flag = 0;
-		if(!comentario.equals(null)) {
-			comentariostable.save(comentario);
-			flag = 1;
-		}
-		
-		return flag;
+		comentariostable.save(comentario);
+		return 1;
 	}
 	
 	@PostMapping("/updateComentario")
 	public int updateComentario(@RequestBody Comentarios comentario) {
 		verificador.exigir(comentariostable, comentario.getId_comentario(), "comentario");
 		
-		int flag = 0;
-		if(!comentario.equals(null)) {
-			comentariostable.save(comentario);
-			flag = 1;
-		}
-		
-		return flag;
+		comentariostable.save(comentario);
+		return 1;
 	}
 	
 	@DeleteMapping("/deleteComentario")
 	public int deleteComentario(@RequestBody Comentarios comentario) {
 		verificador.exigir(comentariostable, comentario.getId_comentario(), "comentario");
 		
-		int flag = 0;
-		if(!comentario.equals(null)) {
-			comentariostable.delete(comentario);
-			flag = 1;
-		}
-		
-		return flag;
+		comentariostable.delete(comentario);
+		return 1;
 	}
 	
 	@PostMapping("/buscarComentarios")

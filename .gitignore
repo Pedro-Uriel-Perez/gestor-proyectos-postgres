@@ -5,3 +5,4 @@ target/
 ~$*.docx
 docs/*.docx
 docs/evidencias-p2/
+docs/*.pdf

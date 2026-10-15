@@ -239,8 +239,9 @@ public class GestorController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		Tareas tareas = new Tareas();
-		modelo.addAttribute("tareas", tareas);
-		
+		// La vista proyecto enlaza su formulario con el objeto "tarea" (th:object="${tarea}")
+		modelo.addAttribute("tarea", tareas);
+
 		return "proyecto";
 	}
 	
@@ -256,13 +257,15 @@ public class GestorController {
 		return mav;
 	}
 	@PostMapping("/saveComentario")
-	public String setSaveComentario(@RequestBody Comentarios comentarios) {
-		
+	public ResponseEntity<Integer> setSaveComentario(@RequestBody Comentarios comentarios) {
+
 		RestTemplate template = this.restTemplate;
 		String urlservicebd = api + "/addComentario";
-		ResponseEntity<Integer> response = template.postForEntity(urlservicebd, comentarios, Integer.class); 
-		
-		return "proyecto";
+		ResponseEntity<Integer> response = template.postForEntity(urlservicebd, comentarios, Integer.class);
+
+		// Se llama por AJAX: se responde el resultado de la API (antes intentaba mostrar la vista
+		// proyecto sin sus datos y respondía 500, por lo que la página no se recargaba al comentar)
+		return ResponseEntity.ok(response.getBody());
 	}
 	
 	

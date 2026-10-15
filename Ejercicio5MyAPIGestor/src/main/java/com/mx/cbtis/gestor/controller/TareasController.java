@@ -46,39 +46,24 @@ public class TareasController {
 	@PostMapping("/addTareas")
 	public int addTareas(@RequestBody Tareas tareas) {
 		
-		int flag = 0;
-		if(!tareas.equals(null)) {
-			tareastable.save(tareas);
-			flag = 1;
-		}
-		
-		return flag;
+		tareastable.save(tareas);
+		return 1;
 	}
 	
 	@PostMapping("/updateTareas")
 	public int updateTareas(@RequestBody Tareas tareas) {
 		verificador.exigir(tareastable, tareas.getId_tarea(), "tarea");
 		
-		int flag = 0;
-		if(!tareas.equals(null)) {
-			tareastable.save(tareas);
-			flag = 1;
-		}
-		
-		return flag;
+		tareastable.save(tareas);
+		return 1;
 	}
 	
 	@DeleteMapping("/deleteTareas")
 	public int deleteTareas(@RequestBody Tareas tareas) {
 		verificador.exigir(tareastable, tareas.getId_tarea(), "tarea");
 		
-		int flag = 0;
-		if(!tareas.equals(null)) {
-			tareastable.delete(tareas);
-			flag = 1;
-		}
-		
-		return flag;
+		tareastable.delete(tareas);
+		return 1;
 	}
 	
 	@PostMapping("/buscarTareas")

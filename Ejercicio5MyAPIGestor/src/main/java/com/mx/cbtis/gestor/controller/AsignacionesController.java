@@ -40,40 +40,24 @@ public class AsignacionesController {
 	@PostMapping("/addAsignacion")
 	public int addAsignacion(@RequestBody Asignaciones asignacion) {
 		
-		int flag = 0;
-		if(!asignacion.equals(null)) {
-			
-			asignacionestable.save(asignacion);
-			flag = 1;
-		}
-		
-		return flag;
+		asignacionestable.save(asignacion);
+		return 1;
 	}
 	
 	@PostMapping("/updateAsignacion")
 	public int updateAsignacion(@RequestBody Asignaciones asignacion) {
 		verificador.exigir(asignacionestable, asignacion.getId_asignacion(), "asignacion");
 		
-		int flag = 0;
-		if(!asignacion.equals(null)) {
-			asignacionestable.save(asignacion);
-			flag = 1;
-		}
-		
-		return flag;
+		asignacionestable.save(asignacion);
+		return 1;
 	}
 	
 	@DeleteMapping("/deleteAsignacion")
 	public int deleteAsignacion(@RequestBody Asignaciones asignacion) {
 		verificador.exigir(asignacionestable, asignacion.getId_asignacion(), "asignacion");
 		
-		int flag = 0;
-		if(!asignacion.equals(null)) {
-			asignacionestable.delete(asignacion);
-			flag = 1;
-		}
-		
-		return flag;
+		asignacionestable.delete(asignacion);
+		return 1;
 	}   
 	
 	@PostMapping("/buscarAsignaciones")

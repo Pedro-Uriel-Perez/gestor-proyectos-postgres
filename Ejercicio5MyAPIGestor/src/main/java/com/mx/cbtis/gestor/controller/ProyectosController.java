@@ -51,40 +51,24 @@ public class ProyectosController {
 	@PostMapping("/addProyecto")
 	public int addProyecto(@RequestBody Proyectos proyecto) {
 		
-		int flag = 0;
-		if(!proyecto.equals(null)) {
-			
-			proyectostable.save(proyecto);
-			flag = 1;
-		}
-		
-		return flag;
+		proyectostable.save(proyecto);
+		return 1;
 	}
 	
 	@PostMapping("/updateProyecto")
 	public int updateProyecto(@RequestBody Proyectos proyecto) {
 		verificador.exigir(proyectostable, proyecto.getId_proyecto(), "proyecto");
 		
-		int flag = 0;
-		if(!proyecto.equals(null)) {
-			proyectostable.save(proyecto);
-			flag = 1;
-		}
-		
-		return flag;
+		proyectostable.save(proyecto);
+		return 1;
 	}
 	
 	@DeleteMapping("/deleteProyecto")
 	public int deleteProyecto(@RequestBody Proyectos proyecto) {
 		verificador.exigir(proyectostable, proyecto.getId_proyecto(), "proyecto");
 		
-		int flag = 0;
-		if(!proyecto.equals(null)) {
-			proyectostable.delete(proyecto);
-			flag = 1;
-		}
-		
-		return flag;
+		proyectostable.delete(proyecto);
+		return 1;
 	}   
 	
 	@PostMapping("/buscarProyectos")
